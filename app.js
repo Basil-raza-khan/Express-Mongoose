@@ -13,6 +13,11 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
   .catch(err => console.log('Failed to connect to MongoDB', err));
 
 app.set('view engine', 'ejs');
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log error stack
+    res.status(500).send('Something went wrong!'); // Send a user-friendly message
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
