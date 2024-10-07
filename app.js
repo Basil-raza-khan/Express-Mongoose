@@ -16,7 +16,6 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('views', path.join(__dirname, 'views'));
 
 app.get('/', (req, res) => {
     res.render('index');
@@ -29,15 +28,9 @@ app.post('/create', async (req, res) => {
 });
 
 app.get('/read', async (req, res) => {
-    try {
-        const data = await userModel.find(); // Replace with your actual query
-        res.render('read', { data });
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        res.status(500).send('Server Error');
-    }
+    let users = await userModel.find();
+    res.render('read', { users });
 });
-
 
 app.get('/delete/:id', async (req, res) => {
     await userModel.findOneAndDelete({ _id: req.params.id });
@@ -60,5 +53,6 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something went wrong!'); // Send a user-friendly message
 });
 
-// Export app for Vercel serverless
-module.exports = app;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
