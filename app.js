@@ -30,10 +30,24 @@ app.get('/', (req, res) => {
 app.post('/create', async (req, res) => {
     try {
         const { name, email, image } = req.body;
-        await userModel.create({ name, email, image });
-        res.redirect('/read'); // Redirect to read after creating user
+
+        // Basic validation (ensure all fields are provided)
+        if (!name || !email || !image) {
+            return res.status(400).send('All fields are required');
+        }
+
+        const user = await userModel.create({ name, email, image });
+        
+        // Redirect to read after successful creation
+        res.redirect('/read');
     } catch (error) {
         console.error('Error creating user:', error);
+        
+        // Handle specific error messages
+        if (error.name === 'MongoError' && error.code === 11000) {
+            return res.status(409).send('User already exists'); // Handle unique constraint violation
+        }
+        
         res.status(500).send('Error creating user');
     }
 });
