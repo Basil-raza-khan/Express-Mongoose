@@ -13,11 +13,6 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
   .catch(err => console.log('Failed to connect to MongoDB', err));
 
 app.set('view engine', 'ejs');
-app.use((err, req, res, next) => {
-    console.error(err.stack); // Log error stack
-    res.status(500).send('Something went wrong!'); // Send a user-friendly message
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -53,6 +48,10 @@ app.post('/update/:userid', async (req, res) => {
     res.redirect('/read');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log error stack
+    res.status(500).send('Something went wrong!'); // Send a user-friendly message
 });
+
+// Export app for Vercel serverless
+module.exports = app;
