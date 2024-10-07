@@ -29,9 +29,15 @@ app.post('/create', async (req, res) => {
 });
 
 app.get('/read', async (req, res) => {
-    let users = await userModel.find();
-    res.render('read', { users });
+    try {
+        const data = await userModel.find(); // Replace with your actual query
+        res.render('read', { data });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Server Error');
+    }
 });
+
 
 app.get('/delete/:id', async (req, res) => {
     await userModel.findOneAndDelete({ _id: req.params.id });
